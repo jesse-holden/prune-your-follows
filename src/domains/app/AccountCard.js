@@ -1,6 +1,7 @@
 import React from "react";
 import parse from "html-react-parser";
 import { ExternalLinkIcon } from "@heroicons/react/outline";
+import axios from "axios";
 
 const display = (...props) => {
   const theString = props
@@ -31,19 +32,6 @@ export function AccountCard({ sx, highlight, ...account }) {
     account.meta?.description
   );
 
-  console.log({
-    displayUsername,
-    test: highlight?.username?.[0] || account.username,
-    test1: highlight?.username?.[0],
-    test2: account.username,
-  });
-
-  console.log({
-    displayName,
-    test1: highlight?.name?.[0],
-    test2: account.name,
-  });
-
   const displayFollowingCount = display(
     account.public_metrics?.following_count,
     "YYYY"
@@ -61,6 +49,17 @@ export function AccountCard({ sx, highlight, ...account }) {
     account.calculated_metrics?.average_tweets_per_year,
     "X"
   );
+
+  const handleUnfollow = async (event) => {
+    try {
+      const unfollowed = await axios.post("/api/following", {
+        accountId: account.id,
+      });
+      console.log({ unfollowed });
+    } catch (error) {
+      console.log(error, account.id);
+    }
+  };
 
   return (
     <div className="flex-space relative flex h-full flex-col rounded-lg border border-gray-300 bg-white shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400">
@@ -80,22 +79,21 @@ export function AccountCard({ sx, highlight, ...account }) {
           )}
         </div>
         <div className="pl-3 pr-5">
-          <a
-            href={twitterUrl}
-            className="focus:outline-none"
-            target="_blank"
-            rel="noreferrer"
-          >
-            {/* Makes the whole box clickable */}
-            <span className="absolute inset-0" aria-hidden="true" />
-            <p className="text-sm font-medium leading-5 text-gray-900">
+          {/* Makes the whole box clickable */}
+          <p className="text-sm font-medium leading-5 text-gray-900">
+            <a
+              href={twitterUrl}
+              className="focus:outline-none"
+              target="_blank"
+              rel="noreferrer"
+            >
               {displayName ? <>{displayName}</> : <>&nbsp;</>}
-            </p>
-            <p className="truncate text-sm leading-5 text-gray-500">
-              {displayUsername && <>@{displayUsername}</>}
-              {displayLocation && <> - {displayLocation}</>}
-            </p>
-          </a>
+            </a>
+          </p>
+          <p className="truncate text-sm leading-5 text-gray-500">
+            {displayUsername && <>@{displayUsername}</>}
+            {displayLocation && <> - {displayLocation}</>}
+          </p>
         </div>
       </div>
 
@@ -115,6 +113,8 @@ export function AccountCard({ sx, highlight, ...account }) {
           Average <strong>{displayAverageTweetsPerYear}</strong> tweets per year
         </p>
       </div>
+
+      <button onClick={handleUnfollow}>Unfollow</button>
     </div>
   );
 }

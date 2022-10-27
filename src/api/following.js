@@ -13,7 +13,24 @@ export default async function handler(req, res) {
 
   try {
     if (req.method === "POST") {
-      res.send(await postFollowing(req));
+      console.log(req.body);
+      const schema = Joi.object({
+        accountId: Joi.string().required(),
+      }).required();
+
+      const { value, error: validationError } = schema.validate(req.body);
+
+      if (validationError) {
+        throw createError(422, validationError);
+      }
+
+      res.send(
+        await postFollowing({
+          ...value,
+          twitterAccessToken: token.twitterAccessToken,
+          followerId: token.sub,
+        })
+      );
     } else if (req.method === "GET") {
       const schema = Joi.object({
         sort: Joi.string(),

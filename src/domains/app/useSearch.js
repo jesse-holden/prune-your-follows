@@ -12,8 +12,6 @@ export default function useSearch({ search }) {
         params: { search: search },
       });
 
-      console.log({ data });
-
       return data;
     },
     {

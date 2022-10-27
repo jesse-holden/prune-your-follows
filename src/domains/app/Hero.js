@@ -8,8 +8,6 @@ export function Hero() {
   const username = session?.user?.username;
   const followingCount = session?.user?.public_metrics?.following_count;
 
-  console.log(session);
-
   return (
     <Container className="pt-20 pb-24 text-center">
       <h1 className="mx-auto max-w-4xl font-display text-5xl font-bold tracking-tight text-slate-900 sm:text-7xl">
